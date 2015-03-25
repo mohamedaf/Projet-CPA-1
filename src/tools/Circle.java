@@ -1,4 +1,4 @@
-package algorithms;
+package tools;
 
 import java.awt.Point;
 

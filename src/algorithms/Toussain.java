@@ -1,205 +1,27 @@
 package algorithms;
 
+import graphics.Fenetre;
+
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class DefaultTeam {
+import tools.Circle;
+import tools.Ligne;
+import tools.Rectangle;
+import tools.Segment;
 
-    // calculCercleMin: ArrayList<Point> --> Circle
-    // renvoie un cercle couvrant tout point de la liste, de rayon minimum.
-    public Circle calculCercleMin(ArrayList<Point> points) {
+public class Toussain {
 
-	if (points.size() < 3 || points.isEmpty()) {
-	    return null;
-	}
-
-	int i;
-	double d, rad, a, b, a2 = 0, b2 = 0, cps, ccp, cs = 0, max;
-	Point dummy, p = null, q = null, c, s;
-	ArrayList<Point> lp = (ArrayList<Point>) points.clone();
-
-	/* Algo Ritter */
-
-	/* Etape 1 */
-	dummy = points.get(0);
-	max = Integer.MIN_VALUE;
-
-	/* Etape 2 */
-	for (Point pi : points) {
-	    d = pi.distance(dummy);
-	    if (d >= max) {
-		max = d;
-		p = pi;
-	    }
-	}
-
-	max = Integer.MIN_VALUE;
-
-	/* Etape 3 */
-	for (Point pi : points) {
-	    d = pi.distance(p);
-	    if (d >= max) {
-		max = d;
-		q = pi;
-	    }
-	}
-
-	/* Etape 4 */
-	c = new Point((p.x + q.x) / 2, (p.y + q.y) / 2);
-
-	/* Etape 5 */
-	rad = (int) p.distance(c);
-
-	/* Etape 11 */
-	while (!lp.isEmpty()) {
-	    /* Etape 6 */
-	    for (i = 0; i < lp.size(); i++) {
-		if ((Point.distance(lp.get(i).x, lp.get(i).y, c.x, c.y)) <= rad) {
-		    lp.remove(i);
-		    i--; /*
-			  * Car on supprime des element et size est compte a
-			  * chaque tour de boucle
-			  */
-		}
-	    }
-
-	    /* Etape 7 ------> 10 */
-	    if (!lp.isEmpty()) {
-		/* c = a*c + b*c */
-		/* a = (|cps|/|cs|) */
-		/* b = (|ccp|/|cs|) */
-		/* |cps| = (rad + |cs|) / 2 */
-		/* |ccp| = |cs| - |cps| */
-
-		s = lp.get(0);
-
-		cs = Point.distance(s.x, s.y, c.x, c.y);
-		cps = (rad + cs) / 2;
-		ccp = cs - cps;
-
-		a = cps / cs;
-		b = ccp / cs;
-
-		a2 = (a * c.x) + (b * s.x);
-		b2 = (a * c.y) + (b * s.y);
-
-		c = new Point((int) a2, (int) b2);
-		rad = (int) (c.distance(s));
-		lp.remove(s);
-	    }
-
-	    if (!lp.isEmpty()) {
-		rad = (rad + cs) / 2;
-		c.setLocation(a2, b2);
-	    }
-	}
-
-	return new Circle(c, (int) rad);
-    }
-
-    public ArrayList<Point> enveloppeConvexeTriParPixel(ArrayList<Point> points) {
-	System.out.println("taille avant : " + points.size());
-	Point[] ymin = new Point[2000];
-	Point[] ymax = new Point[2000];
-	ArrayList<Point> l = new ArrayList<Point>();
-
-	for (Point p : points) {
-	    if (ymax[p.x] == null || ymax[p.x].y < p.y) {
-		ymax[p.x] = p;
-	    }
-
-	    if (ymin[p.x] == null || ymin[p.x].y > p.y) {
-		ymin[p.x] = p;
-	    }
-	}
-
-	for (int i = 0; i < ymin.length; i++) {
-	    if (ymin[i] != null) {
-		l.add(ymin[i]);
-	    }
-	}
-
-	for (int i = (ymax.length - 1); i >= 0; i--) {
-	    if (ymax[i] != null) {
-		l.add(ymax[i]);
-	    }
-	}
-
-	if (l.get(l.size() - 1).equals(l.get(0)))
-	    l.remove(l.size() - 1);
-
-	return l;
-    }
-
-    private double produit_vectoriel(Point p, Point q, Point r) {
-	return ((q.getX() - p.getX()) * (r.getY() - p.getY()))
-		- ((q.getY() - p.getY()) * (r.getX() - p.getX()));
-    }
-
-    private boolean tourne_a_droite(Point p, Point q, Point r) {
-	return (produit_vectoriel(p, q, r) <= 0);
-    }
-
-    public ArrayList<Point> enveloppeConvexeGraham(ArrayList<Point> points) {
-	int i;
-	Point p, q, r;
-	ArrayList<Point> enveloppe = (ArrayList<Point>) enveloppeConvexeTriParPixel(
-		points).clone();
-
-	for (i = 0; i + 1 < enveloppe.size(); i++) {
-	    p = enveloppe.get(i);
-	    q = enveloppe.get((i + 1) % enveloppe.size());
-	    r = enveloppe.get((i + 2) % enveloppe.size());
-
-	    if (tourne_a_droite(p, q, r)) {
-		enveloppe.remove(i + 1);
-		if (i != 0)
-		    i--;
-		i--;
-	    }
-	}
-
-	/* supprimer doublons consecutifs eventuels */
-
-	for (i = 1; i < enveloppe.size(); i++) {
-	    if ((enveloppe.get(i).x == enveloppe.get(i - 1).x)
-		    && (enveloppe.get(i).y == enveloppe.get(i - 1).y)) {
-		enveloppe.remove(i);
-		i--;
-	    }
-	}
-
-	return enveloppe;
-    }
-
-    // enveloppeConvexe: ArrayList<Point> --> ArrayList<Point>
-    // renvoie l'enveloppe convexe de la liste.
-    public ArrayList<Point> enveloppeConvexe(ArrayList<Point> points) {
-	if (points.size() < 3) {
-	    return null;
-	}
-
-	ArrayList<Point> enveloppe = enveloppeConvexeGraham(points);
-
-	for (Point p : enveloppe) {
-	    System.out.println("x : " + p.getX() + ", y : " + p.getY() + " ");
-	}
-
-	ToussaintRectMin(points);
-
-	return enveloppe;
-    }
-
-    public Rectangle ToussaintRectMin(ArrayList<Point> points) {
+    public static Rectangle ToussaintRectMin(ArrayList<Point> points) {
 	if (points.size() < 3) {
 	    return null;
 	}
 
 	int xmin = Integer.MAX_VALUE, xmax = Integer.MIN_VALUE;
 	int ymin = Integer.MAX_VALUE, ymax = Integer.MIN_VALUE;
-	double a1, a2, a3, a4, angleMin, aire, deg = 57.2957795;
+	double a1, a2, a3, a4, angleMin, aire;
 	double longueur, largeur, Amin = Double.MAX_VALUE;
 
 	Point Pleft = null, Pright = null, Ptop = null, Pbottom = null;
@@ -207,14 +29,10 @@ public class DefaultTeam {
 	Ligne leftV, rightV, topH, bottomH;
 	Rectangle rectangleMin;
 	ArrayList<Double> angles;
-	ArrayList<Point2D.Double> orthog;
-	ArrayList<Point> enveloppe = enveloppeConvexeGraham(points);
-	Circle c = calculCercleMin(points);
-	Segment s1 = null;
-
-	for (Point p : enveloppe) {
-	    System.out.println("x : " + p.getX() + ", y : " + p.getY() + " ");
-	}
+	ArrayList<Point> enveloppe = Graham.enveloppeConvexeGraham(points);
+	Circle c = Ritter.calculCercleMin(points);
+	@SuppressWarnings("unused")
+	Fenetre f;
 
 	/* Recuperation du point le plus a l'ouest de l'enveloppe */
 	/* Recuperation du point le plus a l'est de l'enveloppe */
@@ -251,18 +69,12 @@ public class DefaultTeam {
 
 	rectangleMin = new Rectangle(phg, pbg, phd, pbd);
 
-	Fenetre f;/*
-		   * = new Fenetre(1, new Segment(pbg, phg), new Segment(pbg,
-		   * pbd), new Segment(phg, phd), new Segment(pbd, phd), points,
-		   * enveloppe, c);
-		   */
-
 	/* calcul de l'aire du rectangle Longueur*largeur */
 	longueur = phg.distance(pbg);
 	largeur = phg.distance(phd);
 	Amin = longueur * largeur;
 
-	int i = 2, j, r = 0;
+	int imin = 0, i = 2, j;
 
 	for (j = 0; j < enveloppe.size(); i++, j++) {
 
@@ -320,6 +132,7 @@ public class DefaultTeam {
 	    aire = longueur * largeur;
 
 	    if (aire < Amin) {
+		imin = i;
 		Amin = aire;
 		rectangleMin = new Rectangle(phg, pbg, phd, pbd);
 	    }
@@ -358,19 +171,19 @@ public class DefaultTeam {
 	pbd = rectangleMin.getPbd();
 	phd = rectangleMin.getPhd();
 
-	f = new Fenetre(20, new Segment(pbg, phg), new Segment(pbg, pbd),
+	f = new Fenetre(imin, new Segment(pbg, phg), new Segment(pbg, pbd),
 		new Segment(phg, phd), new Segment(pbd, phd), points,
 		enveloppe, c);
 
 	return rectangleMin;
     }
 
-    public double calculAngle(Ligne l, Point p1, Point p2) {
+    public static double calculAngle(Ligne l, Point p1, Point p2) {
 	Point2D.Double v1, v2;
 	double EPSILON = 0.00000001, res;
 
 	v1 = l.getVecteurDir();
-	v2 = l.ConstruireVecteur(p1, p2);
+	v2 = Ligne.ConstruireVecteur(p1, p2);
 	res = Math
 		.abs(Math.atan(((v1.getY() * v2.getX() - v2.getY() * v1.getX()) / (v1
 			.getX() * v2.getX() + v1.getY() * v2.getY()))));
@@ -380,7 +193,7 @@ public class DefaultTeam {
 	return res;
     }
 
-    public void rotationDroite(Ligne l, double angle) {
+    public static void rotationDroite(Ligne l, double angle) {
 	double x, y;
 	Point2D.Double v = l.getVecteurDir();
 
@@ -390,7 +203,7 @@ public class DefaultTeam {
 	l.setVecteurDir(new Point2D.Double(x, y));
     }
 
-    public Point2D.Double intersectionDroites(Ligne l1, Ligne l2) {
+    public static Point2D.Double intersectionDroites(Ligne l1, Ligne l2) {
 	double t;
 	Point2D.Double q, p, a, s, r;
 
@@ -406,4 +219,5 @@ public class DefaultTeam {
 	return new Point2D.Double((p.getX() + (t * r.getX())),
 		(p.getY() + (t * r.getY())));
     }
+
 }

@@ -1,4 +1,4 @@
-package algorithms;
+package graphics;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import tools.Circle;
+import tools.Segment;
+
+@SuppressWarnings("serial")
 public class Dessin extends JPanel {
     private int num;
     private Segment s1, s2, s3, s4;
@@ -116,7 +120,7 @@ public class Dessin extends JPanel {
 	}
 
 	g.setColor(Color.BLACK);
-	g.drawString("Rectangle numero : " + num, 10, 20);
+	g.drawString("Iteration numero : " + num, 10, 20);
 
 	g.setColor(Color.GREEN);
 	g.drawLine((int) s1.getA().getX(), (int) s1.getA().getY(), (int) s1

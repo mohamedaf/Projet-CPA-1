@@ -1,10 +1,14 @@
-package algorithms;
+package graphics;
 
 import java.awt.Point;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
+import tools.Circle;
+import tools.Segment;
+
+@SuppressWarnings("serial")
 public class Fenetre extends JFrame {
 
     private Dessin dessin;
