@@ -207,8 +207,10 @@ public class DefaultTeam {
 	Ligne leftV, rightV, topH, bottomH;
 	Rectangle rectangleMin;
 	ArrayList<Double> angles;
+	ArrayList<Point2D.Double> orthog;
 	ArrayList<Point> enveloppe = enveloppeConvexeGraham(points);
 	Circle c = calculCercleMin(points);
+	Segment s1 = null;
 
 	for (Point p : enveloppe) {
 	    System.out.println("x : " + p.getX() + ", y : " + p.getY() + " ");
@@ -237,32 +239,30 @@ public class DefaultTeam {
 	    }
 	}
 
-	leftV = new Ligne(Pleft, Pleft, new Point(Pleft.x, Pleft.y - 5));
-	rightV = new Ligne(Pright, Pright, new Point(Pright.x, Pright.y + 5));
-	topH = new Ligne(Ptop, Ptop, new Point(Ptop.x + 5, Ptop.y));
-	bottomH = new Ligne(Pbottom, Pbottom, new Point(Pbottom.x - 5,
-		Pbottom.y));
+	leftV = new Ligne(Pleft, new Point(0, -1));
+	rightV = new Ligne(Pright, new Point(0, 1));
+	topH = new Ligne(Ptop, new Point(1, 0));
+	bottomH = new Ligne(Pbottom, new Point(-1, 0));
 
-	phg = new Point2D.Double(xmin, ymin);
-	pbg = new Point2D.Double(xmin, ymax);
-	phd = new Point2D.Double(xmax, ymin);
-	pbd = new Point2D.Double(xmax, ymax);
+	phg = intersectionDroites(topH, leftV);
+	pbg = intersectionDroites(bottomH, leftV);
+	phd = intersectionDroites(topH, rightV);
+	pbd = intersectionDroites(bottomH, rightV);
 
 	rectangleMin = new Rectangle(phg, pbg, phd, pbd);
 
-	Fenetre f = new Fenetre(1, new Segment(pbg, phg),
-		new Segment(pbg, pbd), new Segment(phg, phd), new Segment(pbd,
-			phd), points, enveloppe, c);
+	Fenetre f;/*
+		   * = new Fenetre(1, new Segment(pbg, phg), new Segment(pbg,
+		   * pbd), new Segment(phg, phd), new Segment(pbd, phd), points,
+		   * enveloppe, c);
+		   */
 
 	/* calcul de l'aire du rectangle Longueur*largeur */
-	longueur = Point.distance(xmin, ymin, xmin, ymax);
-	largeur = Point.distance(xmin, ymax, xmax, ymax);
-
+	longueur = phg.distance(pbg);
+	largeur = phg.distance(phd);
 	Amin = longueur * largeur;
 
 	int i = 2, j, r = 0;
-
-	System.out.println("Titi\n\n\n");
 
 	for (j = 0; j < enveloppe.size(); i++, j++) {
 
@@ -289,11 +289,6 @@ public class DefaultTeam {
 		    enveloppe.get((enveloppe.indexOf(Pright) + 1)
 			    % enveloppe.size()));
 
-	    System.out.println("avant Rotation");
-
-	    System.out.println("a1top : " + a1 + ", a2bottom : " + a2
-		    + ", a3left : " + a3 + ", a4right : " + a4);
-
 	    angles = new ArrayList<Double>();
 
 	    angles.add(a1);
@@ -303,41 +298,12 @@ public class DefaultTeam {
 
 	    angleMin = Collections.min(angles);
 
-	    System.out.println("angleMin : " + angleMin + ", en deg : "
-		    + (angleMin * deg));
-
 	    /* rotation des 4 droites de angleMin */
 
-	    rotationDroite(topH, angleMin);
-	    rotationDroite(bottomH, angleMin);
-	    rotationDroite(leftV, angleMin);
-	    rotationDroite(rightV, angleMin);
-
-	    /*************************************************************/
-	    /*
-	     * System.out
-	     * .println("Apres Rotation: (l'un des angles doit etre = 0)");
-	     * 
-	     * a1 = calculAngle( topH, Ptop,
-	     * enveloppe.get((enveloppe.indexOf(Ptop) + 1) % enveloppe.size()));
-	     * a2 = calculAngle( bottomH, Pbottom,
-	     * enveloppe.get((enveloppe.indexOf(Pbottom) + 1) %
-	     * enveloppe.size())); a3 = calculAngle( leftV, Pleft,
-	     * enveloppe.get((enveloppe.indexOf(Pleft) + 1) %
-	     * enveloppe.size())); a4 = calculAngle( rightV, Pright,
-	     * enveloppe.get((enveloppe.indexOf(Pright) + 1) %
-	     * enveloppe.size()));
-	     * 
-	     * angles = new ArrayList<Double>();
-	     * 
-	     * angles.add(a1); angles.add(a2); angles.add(a3); angles.add(a4);
-	     * 
-	     * angleMin = Collections.min(angles);
-	     * 
-	     * System.out.println("a1top : " + a1 + ", a2bottom : " + a2 +
-	     * ", a3left : " + a3 + ", a4right : " + a4);
-	     */
-	    /*************************************************************/
+	    rotationDroite(topH, -angleMin);
+	    rotationDroite(bottomH, -angleMin);
+	    rotationDroite(leftV, -angleMin);
+	    rotationDroite(rightV, -angleMin);
 
 	    /* calcul des nouveaux points d'intersections des 4 droites */
 
@@ -358,24 +324,32 @@ public class DefaultTeam {
 		rectangleMin = new Rectangle(phg, pbg, phd, pbd);
 	    }
 
-	    f = new Fenetre(i, new Segment(pbg, phg), new Segment(pbg, pbd),
-		    new Segment(phg, phd), new Segment(pbd, phd), points,
-		    enveloppe, c);
+	    /*
+	     * f = new Fenetre(i, new Segment(pbg, phg), new Segment(pbg, pbd),
+	     * new Segment(phg, phd), new Segment(pbd, phd), points, enveloppe,
+	     * c);
+	     */
 
 	    if (angleMin == a1) {
 		Ptop = enveloppe.get((enveloppe.indexOf(Ptop) + 1)
 			% enveloppe.size());
-	    } else if (angleMin == a2) {
+		topH.setP(Ptop);
+	    }
+	    if (angleMin == a2) {
 		Pbottom = enveloppe.get((enveloppe.indexOf(Pbottom) + 1)
 			% enveloppe.size());
-	    } else if (angleMin == a3) {
+		bottomH.setP(Pbottom);
+	    }
+	    if (angleMin == a3) {
 		Pleft = enveloppe.get((enveloppe.indexOf(Pleft) + 1)
 			% enveloppe.size());
-	    } else if (angleMin == a4) {
+		leftV.setP(Pleft);
+	    }
+	    if (angleMin == a4) {
 		Pright = enveloppe.get((enveloppe.indexOf(Pright) + 1)
 			% enveloppe.size());
-	    } else
-		System.out.println("Probleme !!!!!  \n");
+		rightV.setP(Pright);
+	    }
 
 	}
 
@@ -393,25 +367,25 @@ public class DefaultTeam {
 
     public double calculAngle(Ligne l, Point p1, Point p2) {
 	Point2D.Double v1, v2;
+	double EPSILON = 0.00000001, res;
 
 	v1 = l.getVecteurDir();
 	v2 = l.ConstruireVecteur(p1, p2);
-
-	return Math
+	res = Math
 		.abs(Math.atan(((v1.getY() * v2.getX() - v2.getY() * v1.getX()) / (v1
-			.getX() * v2.getX() + v1.getY() * v2.getY()))))/*
-								        * *
-								        * 57.2957795
-								        * )
-								        */;
+			.getX() * v2.getX() + v1.getY() * v2.getY()))));
+	if (res < EPSILON)
+	    return 0;
+
+	return res;
     }
 
     public void rotationDroite(Ligne l, double angle) {
 	double x, y;
 	Point2D.Double v = l.getVecteurDir();
 
-	x = (v.getX() * Math.cos(angle)) - (v.getY() * Math.sin(angle));
-	y = (v.getX() * Math.sin(angle)) + (v.getY() * Math.cos(angle));
+	x = (v.getX() * Math.cos(angle)) + (v.getY() * Math.sin(angle));
+	y = (-(v.getX() * Math.sin(angle))) + (v.getY() * Math.cos(angle));
 
 	l.setVecteurDir(new Point2D.Double(x, y));
     }

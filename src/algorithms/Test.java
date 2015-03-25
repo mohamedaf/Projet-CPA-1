@@ -10,7 +10,8 @@ import java.util.ArrayList;
 public class Test {
 
     public static void main(String[] args) {
-	String fichier = "samples/test-156.points";
+
+	String fichier = "samples/test-56.points";
 	ArrayList<Point> points = new ArrayList<Point>();
 	ArrayList<Point> enveloppe = new ArrayList<Point>();
 
@@ -33,6 +34,6 @@ public class Test {
 	}
 
 	DefaultTeam d = new DefaultTeam();
-	Rectangle r = d.ToussaintRectMin(points);
+	Rectangle rec = d.ToussaintRectMin(points);
     }
 }
