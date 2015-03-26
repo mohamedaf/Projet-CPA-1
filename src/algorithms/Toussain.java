@@ -10,11 +10,11 @@ import java.util.Collections;
 import tools.Circle;
 import tools.Ligne;
 import tools.Rectangle;
-import tools.Segment;
 
 public class Toussain {
 
-    public static Rectangle ToussaintRectMin(ArrayList<Point> points) {
+    public static Rectangle ToussaintRectMin(ArrayList<Point> points,
+	    ArrayList<Point> enveloppe, Circle c) {
 	if (points.size() < 3) {
 	    return null;
 	}
@@ -29,8 +29,8 @@ public class Toussain {
 	Ligne leftV, rightV, topH, bottomH;
 	Rectangle rectangleMin;
 	ArrayList<Double> angles;
-	ArrayList<Point> enveloppe = Graham.enveloppeConvexeGraham(points);
-	Circle c = Ritter.calculCercleMin(points);
+	// ArrayList<Point> enveloppe = Graham.enveloppeConvexeGraham(points);
+	// Circle c = Ritter.calculCercleMin(points);
 	@SuppressWarnings("unused")
 	Fenetre f;
 
@@ -74,9 +74,7 @@ public class Toussain {
 	largeur = phg.distance(phd);
 	Amin = longueur * largeur;
 
-	int imin = 0, i = 2, j;
-
-	for (j = 0; j < enveloppe.size(); i++, j++) {
+	for (int j = 0; j < enveloppe.size(); j++) {
 
 	    /* calculer les 4 angles puis chercher angle minmal */
 
@@ -132,7 +130,6 @@ public class Toussain {
 	    aire = longueur * largeur;
 
 	    if (aire < Amin) {
-		imin = i;
 		Amin = aire;
 		rectangleMin = new Rectangle(phg, pbg, phd, pbd);
 	    }
@@ -171,9 +168,10 @@ public class Toussain {
 	pbd = rectangleMin.getPbd();
 	phd = rectangleMin.getPhd();
 
-	f = new Fenetre(imin, new Segment(pbg, phg), new Segment(pbg, pbd),
-		new Segment(phg, phd), new Segment(pbd, phd), points,
-		enveloppe, c);
+	/*
+	 * f = new Fenetre(imin, new Segment(pbg, phg), new Segment(pbg, pbd),
+	 * new Segment(phg, phd), new Segment(pbd, phd), points, enveloppe, c);
+	 */
 
 	return rectangleMin;
     }
