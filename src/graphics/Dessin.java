@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import test.TestF;
 import tools.Circle;
 import tools.Segment;
 
@@ -17,9 +18,13 @@ public class Dessin extends JPanel {
     private ArrayList<Point> points;
     private ArrayList<Point> enveloppe;
     private Circle c;
+    private TestF f = null;
+
+    private static int index = 3;
 
     public Dessin(int num, Segment s1, Segment s2, Segment s3, Segment s4,
-	    ArrayList<Point> points, ArrayList<Point> enveloppe, Circle c) {
+	    ArrayList<Point> points, ArrayList<Point> enveloppe, Circle c,
+	    TestF f) {
 	this.num = num;
 	this.s1 = s1;
 	this.s2 = s2;
@@ -28,6 +33,7 @@ public class Dessin extends JPanel {
 	this.points = points;
 	this.enveloppe = enveloppe;
 	this.c = c;
+	this.f = f;
     }
 
     public int getNum() {
@@ -94,11 +100,19 @@ public class Dessin extends JPanel {
 	this.c = c;
     }
 
+    public TestF getF() {
+	return f;
+    }
+
+    public void setF(TestF f) {
+	this.f = f;
+    }
+
     @Override
     public void paintComponent(Graphics g) {
 	int x1, y1, x2, y2;
 
-	g.setColor(Color.BLUE);
+	g.setColor(Color.WHITE);
 	for (Point p : points) {
 	    g.drawRect(p.x, p.y, 1, 1);
 	}
@@ -119,10 +133,14 @@ public class Dessin extends JPanel {
 	    g.drawLine(x1, y1, x2, y2);
 	}
 
-	g.setColor(Color.BLACK);
-	g.drawString("Iteration numero : " + num, 10, 20);
+	g.setColor(Color.WHITE);
+	g.drawString("Tape 'e' to change file", 10, 20);
 
-	g.setColor(Color.GREEN);
+	if (num != -1) {
+	    g.drawString("Fichier numero : " + num, 10, 40);
+	}
+
+	g.setColor(Color.CYAN);
 	g.drawLine((int) s1.getA().getX(), (int) s1.getA().getY(), (int) s1
 		.getB().getX(), (int) s1.getB().getY());
 	g.drawLine((int) s2.getA().getX(), (int) s2.getA().getY(), (int) s2
@@ -131,5 +149,14 @@ public class Dessin extends JPanel {
 		.getB().getX(), (int) s3.getB().getY());
 	g.drawLine((int) s4.getA().getX(), (int) s4.getA().getY(), (int) s4
 		.getB().getX(), (int) s4.getB().getY());
+    }
+
+    @SuppressWarnings("static-access")
+    public void nextFile() {
+	if (index < 1665 && (f != null)) {
+	    f.TestFile(this.index++);
+	    this.setBackground(Color.BLACK);
+	    this.repaint();
+	}
     }
 }

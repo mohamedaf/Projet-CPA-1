@@ -1,6 +1,6 @@
 package algorithms;
 
-import graphics.Fenetre;
+import graphics.WindowView;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -32,7 +32,7 @@ public class Toussain {
 	// ArrayList<Point> enveloppe = Graham.enveloppeConvexeGraham(points);
 	// Circle c = Ritter.calculCercleMin(points);
 	@SuppressWarnings("unused")
-	Fenetre f;
+	WindowView f;
 
 	/* Recuperation du point le plus a l'ouest de l'enveloppe */
 	/* Recuperation du point le plus a l'est de l'enveloppe */
