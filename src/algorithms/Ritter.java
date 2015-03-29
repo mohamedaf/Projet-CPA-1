@@ -86,14 +86,9 @@ public class Ritter {
 		a2 = (a * c.x) + (b * s.x);
 		b2 = (a * c.y) + (b * s.y);
 
-		c = new Point((int) a2, (int) b2);
-		rad = (int) (c.distance(s));
-		lp.remove(s);
-	    }
-
-	    if (!lp.isEmpty()) {
-		rad = (rad + cs) / 2;
 		c.setLocation(a2, b2);
+		rad = (rad + cs) / 2;
+		lp.remove(s);
 	    }
 	}
 

@@ -34,6 +34,7 @@ public class Dessin extends JPanel {
 	this.enveloppe = enveloppe;
 	this.c = c;
 	this.f = f;
+	this.index = num + 1;
     }
 
     public int getNum() {

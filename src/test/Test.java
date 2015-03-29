@@ -4,7 +4,7 @@ public class Test {
 
     public static void main(String[] args) {
 	TestF f = new TestF();
-	f.Test();
+	// f.Test();
 	f.TestFile(2);
     }
 }

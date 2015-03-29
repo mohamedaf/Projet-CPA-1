@@ -107,7 +107,8 @@ public class TestF {
 	Point2D.Double phg, pbg, phd, pbd;
 	Rectangle rectangle, rectangleMin = null;
 	Circle c = null, cMin = null;
-	double qualite = -1, AirePolyg = -1, A = -1, qualiteTot = 0;
+	double qualiteRec = -1, qualiteCer = -1, AirePolyg = -1, AireCercle = -1;
+	double A = -1, qualiteTotRec = 0, qualiteTotCer = 0;
 
 	for (int i = 2; i < 1665; i++) {
 	    fichier = "samples/test-" + i + ".points";
@@ -153,24 +154,33 @@ public class TestF {
 	    }
 
 	    AirePolyg = A / 2;
-	    qualite = (aire / AirePolyg) - 1;
-	    qualiteTot += qualite;
 
-	    System.out.println("qualite = " + qualite);
+	    qualiteRec = (aire / AirePolyg) - 1;
+	    qualiteCer = ((Math.PI * Math.pow(c.getRadius(), 2)) / AirePolyg) - 1;
+
+	    qualiteTotRec += qualiteRec;
+	    qualiteTotCer += qualiteCer;
+
+	    System.out.println("qualite Rectangle min = " + qualiteRec);
+	    System.out.println("qualite Cercle min = " + qualiteCer);
 
 	    if (aire < Amin) {
 		Amin = aire;
 		rectangleMin = rectangle;
 		pointsMin = (ArrayList<Point>) points.clone();
 		enveloppeMin = (ArrayList<Point>) enveloppe.clone();
-		cMin = Ritter.calculCercleMin(points);
+		cMin = c;
 	    }
 	}
 
 	System.out.println("\nL'aire du rectangle minimal sur tous les \n"
 		+ "rectangles minimaux de tous les fichiers = " + Amin);
 
-	System.out.println("\nqualiteMoyenne = " + (qualiteTot / 1663));
+	System.out.println("\nqualiteMoyenne Rectangle min = "
+		+ (qualiteTotRec / 1663));
+
+	System.out.println("\nqualiteMoyenne Cercle min = "
+		+ (qualiteTotCer / 1663));
 
 	pbg = rectangleMin.getPbg();
 	phg = rectangleMin.getPhg();
